@@ -1,21 +1,22 @@
-import React, { Component, useEffect } from 'react';
+import React, { Component } from 'react';
+
+import { Route, BrowserRouter as Router, Link, Switch } from "react-router-dom";
+
 import axios from 'axios';
 import Stripe from "react-stripe-checkout";
 import { District, Region, Province } from "ubigeos";
 import '../App.js'
 import '../App.css'
 import Cookies from 'universal-cookie';
-import ReactCircleModal from 'react-circle-modal'
-
-import {Link} from 'react-router-dom';
 
 const cookies = new Cookies();
-class infosolicitud extends React.Component {
+
+class solicitudedit extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            id:'',
+            solid:0,
             solicituduserid: '',
             solicitudTitulo: "",
             solicitudDistrito: "",
@@ -32,9 +33,7 @@ class infosolicitud extends React.Component {
             solnomRegion: "",
             solnomProvincia: "",
             solnomDistrito: "",
-            respestado: 0,
-            rsptinfo: {},
-            costo: 8,
+            respestado: 0
         };
 
         this.handleToken = this.handleToken.bind(this);
@@ -44,11 +43,11 @@ class infosolicitud extends React.Component {
     componentDidMount() {
         const { match } = this.props;
         const solId = match.params.solicitudID
-        const infosolicitudUrl = `${process.env.REACT_APP_POKE_API_BASE_URL}solicitud/${solId}`;
-        axios.get(infosolicitudUrl)
+        const solicitudeditUrl = `${process.env.REACT_APP_POKE_API_BASE_URL}solicitud/${solId}/`;
+        axios.get(solicitudeditUrl)
             .then(res => {
                 this.setState({
-                    id:res.data.id,
+                    solid:res.data.id,
                     solicituduserid: res.data.usuarioid,
                     solicitudTitulo: res.data.titulo,
                     solicitudDistrito: res.data.distrito,
@@ -76,44 +75,63 @@ class infosolicitud extends React.Component {
                     compradorid: cookies.get('id'),
                     validateStatus: (status) => status === 200
                 }).then(res => {
-                    this.setState({ respestado: res.status })
+                     this.setState({respestado:res.status}) 
                 }).catch((e) => {
                     this.setState({ respestado: e.response.status })
-                });
-                axios.get(`http://127.0.0.1:8050/api/usuarios/${res.data.usuarioid}/`).then(
-                    res => {
-                        this.setState({ rsptinfo: res.data })
-                    })
+                })
             })
     }
 
     async handleToken(token) {
+        alert(this.state.respestado)
         let apiRes1 = {};
+        alert(`id user:${this.state.solicituduserid} id comprador: ${cookies.get('id')} `);
         try {
             console.log(token);
-
-            await axios.post(`http://127.0.0.1:8050/api/payment/charge`, "", {
-                headers: {
-                    token: token.id,
-                    amount: this.state.costo,
-                }
-            }
-            )
             apiRes1 = await axios.post(`http://127.0.0.1:8050/api/pagos/`,
                 {
                     solicitanteid: this.state.solicituduserid,
                     compradorid: cookies.get('id'),
                     validateStatus: (status) => status === 201
                 })
-
-
+            await axios.post(`http://127.0.0.1:8050/api/payment/charge`, "", {
+                headers: {
+                    token: token.id,
+                    amount: 8,
+                }
+            })
             alert(`${apiRes1.status} - Pago creado exitosamente`);
-            window.location.href="/info-solicitud/"+this.state.id
         } catch (err) {
             apiRes1 = err.response;
             alert(`Error ${apiRes1.status}`);
         }
+
+        /* await axios
+            .post("http://localhost:8050/api/payment/charge", "", {
+                headers: {
+                    token: token.id,
+                    amount: 3,
+                },
+            })
+            .then(() => {
+                try{
+                let inspg={
+                    solicitanteid:this.state.usuarioid,
+                    compradorid:cookies.get('id'),
+                }
+                axios.post(`${REACT_APP_POKE_API_BASE_URL}/pagos/`,inspg)
+                }catch{
+
+                }
+            }).then(()=>{
+                alert("Payment Success");
+            })
+            .catch((error) => {
+                alert(error);
+            }); */
     }
+
+
 
     render() {
         return (
@@ -162,7 +180,7 @@ class infosolicitud extends React.Component {
 
                                 <div className="single-property-wrapper">
                                     <div className="single-property-header">
-                                        <h1 className="property-title pull-left">{this.state.solicitudTitulo}</h1>
+                                        <h1 className="property-title pull-left" >{this.state.solicitudTitulo}</h1>
                                         <span className="property-price pull-right">S/.{this.state.solicitudPresupuesto} al mes</span>
                                     </div>
 
@@ -260,60 +278,19 @@ class infosolicitud extends React.Component {
                                             </li>
                                         </ul>
                                     </div>
-                                    <div className="App">
-                                        {
-                                        (!cookies.get('id'))?(<Link className="navbar-btn nav-button wow bounceInRight login" to='/login' data-wow-delay="0.4s">Login</Link>
-                                        ):(
-                                        (this.state.solicituduserid != cookies.get('id')) ? (
-                                            (this.state.respestado === 404) ? (
 
-                                                <div>
-                                                    <label>Costo por compra S/.{`${this.state.costo}`}</label><br />
-                                                    <Stripe
-                                                        stripeKey="pk_test_51IygKpJma8bRrFtovmLtCUZ2n94JSj078Az4cC0rLw4TEvYKPT4NYw6b0E1BwCw1EMWsqa39b4tIMLN8uJq5KJe200zntFJzBe"
-                                                        token={this.handleToken}
-                                                    />
-                                                </div>) : (
-                                                <ReactCircleModal
-                                                    backgroundColor="#F19908"
-                                                    toogleComponent={onClick => (
-                                                        <button onClick={onClick}>
-                                                            Ver información del solicitante
-                                                        </button>
-                                                    )}
-                                                    // Optional fields and their default values
-                                                    offsetX={0}
-                                                    offsetY={0}
-                                                >
-                                                    {(onClick) => (
-                                                        <div style={{ backgroundColor: '#F3EADB', padding: '1em' }}>
-                                                            <h3>Información del solicitante: </h3>
-                                                            <div>
-                                                                <h5>Nombre:</h5>
-                                                                <p>{this.state.rsptinfo.nombre}</p>
-                                                                <h5>Apellido:</h5>
-                                                                <p>{this.state.rsptinfo.apellido}</p>
-                                                                <h5>Telefono:</h5>
-                                                                <p>{this.state.rsptinfo.telefono}</p>
-                                                                <h5>Celular:</h5>
-                                                                <p>{this.state.rsptinfo.celular}</p>
-                                                                <h5>Correo:</h5>
-                                                                <p>{this.state.rsptinfo.correo}</p>
-                                                            </div>
-                                                            <div className="App">
-                                                                <button onClick={onClick} >
-                                                                    Salir
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    )}
-                                                </ReactCircleModal>
+                                    {!cookies.get('correo')? 
+                                        (
+                                            <div style={{marginLeft: "50%"}}>
 
-                                            )
-                                        ) : (<span></span>)
-                                        )    
+                                            </div>
+
+                                        ) : (
+                                            <div style={{marginTop: "5%",marginLeft: "43%"}}>
+                                                <Link className="navbar-btn nav-button wow bounceInRight login" to={`/update-solicitud/${this.state.solid}/`} data-wow-delay="0.4s">Editar Solicitud</Link>
+                                            </div>
+                                        )
                                     }
-                                    </div>
                                 </div>
                             </div>
 
@@ -330,4 +307,4 @@ class infosolicitud extends React.Component {
     }
 }
 
-export default infosolicitud;
+export default solicitudedit;

@@ -2,7 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import Cookies from 'universal-cookie';
 
-const baseUrl = "http://127.0.0.1:8050/api";
+const baseUrl = "http://localhost:8050/api";
 const cookies = new Cookies();
 
 class login extends React.Component {
@@ -35,7 +35,6 @@ class login extends React.Component {
                 })
         } catch (err) {
             apiRes = err.response;
-
             if(this.state.form.correo.length === 0|| this.state.form.password.length === 0){
                 alert("Por favor no dejes tus credenciales en blanco")
             }else{
@@ -48,8 +47,6 @@ class login extends React.Component {
         cookies.set('apellido', data.apellido, { path: "/" });
         cookies.set('nombre', data.nombre, { path: "/" });
         cookies.set('correo', data.correo, { path: "/" });
-        cookies.set('telefono', data.telefono, { path: "/" });
-        cookies.set('celular', data.celular, { path: "/" });
         alert(`Bienvenido ${data.nombre} ${data.apellido}`);
         window.location.href = "./index";
         console.log("Conectadode manera satisfactoria");}else{

@@ -13,6 +13,9 @@ import solicitud from "./componentes/solicitud";
 import usersolicitud from "./componentes/user-solicitud";
 import missolicitudes from './componentes/mis-solicitudes';
 import infosolicitud from "./componentes/info-solicitud";
+import solicitudedit from "./componentes/solicitud-edit";
+
+import updatesolicitud from "./componentes/update-solicitud";
 
 
 
@@ -111,6 +114,13 @@ function App() {
       <Route  path="/user-solicitud" component={usersolicitud}></Route>
       <Route path="/mis-solicitudes" component={missolicitudes}></Route>
       <Route path="/info-solicitud/:solicitudID" component={infosolicitud} ></Route>
+
+      <Route path="/solicitud-edit/:solicitudID" component={solicitudedit}></Route>
+
+      <Route path="/update-solicitud/:solicitudID" component={updatesolicitud}></Route>
+
+
+
       <Route  path="/contact" component={contact}></Route>
 
       <Route path="/change-password" component={changepassword}></Route>

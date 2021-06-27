@@ -36,7 +36,7 @@ class solicitud extends React.Component {
             <div className="container">
                 <div className="row">
                     <div className="page-head-content">
-                        <h1 className="page-title">Lista de mis Solicitudes</h1>               
+                        <h1 className="page-title">Lista de Solicitudes</h1>               
                     </div>
                 </div>
             </div>
@@ -92,9 +92,9 @@ class solicitud extends React.Component {
                                                     <h5><Link to={`/info-solicitud/${solicitudID}`} > {(solicitudes.titulo.length>24)?(solicitudes.titulo.substring(0,24)+"..."):(solicitudes.titulo)} </Link></h5>
                                                     <div className="dot-hr"></div>
 
-                                                    <span className="pull-left" field="superficie"><b> Area :</b> {solicitudes.presupuesto}</span>
+                                                    <span className="pull-left" field="superficie"><b> Area :</b> {solicitudes.superficie}</span>
                                                                 
-                                                    <span className="proerty-price pull-right"> {solicitudes.superficie}</span>
+                                                    <span className="proerty-price pull-right">Presupuesto al mes: S/. {solicitudes.presupuesto}</span>
                                                     <p style={{ display: 'none'}} >Suspendisse ultricies Suspendisse ultricies Nulla quis dapibus nisl. Suspendisse ultricies commodo arcu nec pretium ...</p>
                                                     <div className="property-icon">
 

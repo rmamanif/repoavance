@@ -5,7 +5,7 @@ import { District, Region, Province } from "ubigeos";
 import departamentos from '../cosas/departamentos'
 import provincias from '../cosas/provincias'
 import distritos from '../cosas/distritos'
-const baseUrl = "http://127.0.0.1:8050/api";
+const baseUrl = "http://localhost:8050/api";
 const cookies = new Cookies();
 
 class usersolicitud extends React.Component {
@@ -92,18 +92,21 @@ class usersolicitud extends React.Component {
     }
 
     handleChange = event => {
+        /* Esto te devuelve el valor de la region junto con su nombre */
         this.setState({ rid: event.target.value });
         let a = Region.instance(`${event.target.value}`).getName();
         this.setState({ rnombre: JSON.stringify(a) });
     };
 
     handleChange2 = event => {
+        /* Esto te devuelve el valor de la provincia y una variable que contiene su nombre */
         this.setState({ pid: event.target.value });
         let a = Province.instance(`${event.target.value}`).getName();
         this.setState({ pnombre: JSON.stringify(a) });
     };
 
     handleChange3 = event => {
+        /* Esto te devuelve el distrito junto con su nombre */
         this.setState({ did: event.target.value });
         let a = District.instance(`${event.target.value}`).getName();
         this.setState({ dnombre: JSON.stringify(a) });
@@ -198,6 +201,8 @@ class usersolicitud extends React.Component {
                                                         </div>
 
                                                         <div className="form-group">
+                                                            {/* Este select lee todos los valores de departamentos una sola vez
+                                                            como es un mapa, los valores son dinámicos */}
                                                             <label>Departamento<small>(required)</small></label>
                                                             <select value={this.state.value} key={this.state.key} onChange={this.handleChange}>
                                                                 <option defaultValue >
@@ -211,6 +216,9 @@ class usersolicitud extends React.Component {
                                                             </select>
                                                         </div>
                                                         <div className="form-group">
+                                                            {/* Esto devuelve el valor de la provincia, para que cada provincia se ajuste a su región
+                                                            tiene un condicional, sólo devuelve las opciones de las provincias cuyo department_id
+                                                            sea igual al del departamento elegido */}
                                                             <label>Provincia <small>(required)</small></label>
                                                             <select value={this.state.value} key={this.state.key} onChange={this.handleChange2}>
                                                                 <option defaultValue>
@@ -218,7 +226,7 @@ class usersolicitud extends React.Component {
                                                                 </option>
                                                                 {
                                                                     provincias.map((pi, key) =>
-                                                                        (pi.department_id === this.state.rid) ? (
+                                                                        (pi.department_id === this.state.rid) ? (/* <--this.state.rid es el ID de la region */
                                                                             <option key={pi.id} value={pi.id} >
                                                                                 {pi.name}
                                                                             </option>)
@@ -229,6 +237,8 @@ class usersolicitud extends React.Component {
                                                         </div>
 
                                                         <div className="form-group">
+                                                            {/* Para distrito es un poco más complicado, primero evalua el ID del departamento*
+                                                             y  luego evalua el ID de la provincia */}
                                                             <label>Distrito <small>(required)</small></label>
                                                             <select value={this.state.value} key={this.state.key} onChange={this.handleChange3}>
                                                                 <option defaultValue>
@@ -236,8 +246,8 @@ class usersolicitud extends React.Component {
                                                                 </option>
                                                                 {
                                                                     distritos.map((di, key) =>
-                                                                        (di.department_id === this.state.rid) ? (
-                                                                            (di.province_id === this.state.pid) ? (
+                                                                        (di.department_id === this.state.rid) ? (/*<--ID de region */
+                                                                            (di.province_id === this.state.pid) ? (/* <--ID de provincia */
                                                                                 <option key={di.id} value={di.id} >
                                                                                     {di.name}
                                                                                 </option>)
